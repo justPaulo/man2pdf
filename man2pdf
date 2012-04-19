@@ -2,7 +2,7 @@
 #
 # man2pdf, an open source UNIX man page coverter to PDF file format, for Mac OS X
 # © 2012 Paulo A. Nascimento
-# $Id: man2pdf.sh, v1.0 2012/04/15 $
+# v1.0 2012/04/19
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
