@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# man2pdf, an open source UNIX man page coverter to PDF file format, for Mac OS X
+# © 2012 Paulo A. Nascimento
+# $Id: man2pdf.sh,v 0.3 2012/04/15 $
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or -at your
+# option- any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# You can reach me at paulonascimento.blogspot.com
+#
+# Inspired in: http://en.wikipedia.org/wiki/Man_page#Converting_man_pages
+#
+# Development environment: Darwin MacBook.local 11.3.0 Darwin Kernel Version 11.3.0: Thu Jan 12 18:48:32 PST 2012; root:xnu-1699.24.23~1/RELEASE_I386 i386
+#
+# Caveats: Yes! currently only working for commands belonging to Section 1 of UNIX manual, be patient...
+
+if [ $# != 1 ]
+then
+	echo Usage: man2pdf \<UNIX_command\>
+	exit 5
+fi
+
+groff -mandoc /usr/share/man/man1/$1.1 > $1.ps 				# As an intermediate step, we "try" to create a PostScript file
+if [ $? -eq 0 ] 							# If groff was able to run without errors... 
+then
+	gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=$1.pdf $1.ps # We need the help of GhostScript
+	rm $1.ps							 # We may now delete the PostScript file
+	open $1.pdf							 # For your own convenience we open the PDF file in Preview
+else
+	gzcat /usr/share/man/man1/$1.1.gz | groff -mandoc > $1.ps	 # Now we get clever and virtually uncompress the gzipped command first
+	gs -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=$1.pdf $1.ps # We need the help of GhostScript as usual
+ 	rm $1.ps                                                         # We may now delete the PostScript file too
+ 	open $1.pdf							 # For your own convenience we open the PDF file in Preview as usual
+fi
+
+#
+# Return codes on failure/exit:
+# 5 (man2pdf invoked without arguments!)
+# 6 (man2pdf unable to process your process your request, i.e., command does not belong to Section 1) 
